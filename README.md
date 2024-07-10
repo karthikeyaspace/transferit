@@ -1,0 +1,2 @@
+- store shared files in local storage
+- firebase storage
