@@ -5,7 +5,7 @@ import Toast from "../utils/Toast";
 const UploadFile: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [pass, setPass] = useState<string>("");
-  const [id, setId] = useState<string>("");
+  const [id, setId] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
 
   //when user selects a file
@@ -28,17 +28,18 @@ const UploadFile: React.FC = () => {
     setLoading(true);
     const upload = await uploadFile(file, pass);
     setLoading(false);
-    if (upload.message === "success") {
+    if (upload.success) {
       Toast.Success("File uploaded successfully.");
-      console.log(upload.data);
-      setId(upload.data?.filedata.id || "");
+      setId(upload.id)
       setFile(null);
       (
         document.getElementsByClassName("passfield")[0] as HTMLInputElement
       ).value = "";
-    } else {
+    } 
+
+    else {
       Toast.Error("Error uploading file.");
-      console.error("Error uploading file:", upload.error);
+      console.error("Error uploading file:", upload.message);
     }
   };
 
@@ -48,8 +49,8 @@ const UploadFile: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-8 px-8 py-20 text-white ">
-      <div className="text-center max-w-2xl">
+    <div className="w-full flex flex-col justify-center items-center gap-8 px-8 md:px-0 text-white ">
+      <div className="text-center max-w-2xl mt-20">
         <h1 className="text-4xl font-bold mb-4 ">
           Secure Anonymous File Share
         </h1>
@@ -95,7 +96,7 @@ const UploadFile: React.FC = () => {
           />
         </label>
       </div>
-      <div className="w-full max-w-lg">
+      <div className={`w-full max-w-lg ${!id && "mb-10"}`}>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <input
             type="password"
@@ -105,10 +106,10 @@ const UploadFile: React.FC = () => {
           />
           <button
             onClick={createFile}
-            className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+            className="w-40 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
             disabled={loading}
           >
-            Upload
+            {loading ? "Loading...": "Upload"}
           </button>
         </div>
         <p className="mt-2 text-xs font-thin text-gray-500">
@@ -117,7 +118,7 @@ const UploadFile: React.FC = () => {
       </div>
 
       {id && (
-        <div className="w-full max-w-xl relative bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+        <div className=" w-full max-w-xl relative bg-gray-800 border overflow-x-hidden border-gray-700 rounded-lg p-4 mb-10 text-center">
           <p className="text-sm text-gray-400 mb-2">Your secure file link:</p>
           <p
             className="absolute top-0 right-2 text-gray-600 hover:cursor-pointer"

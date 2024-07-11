@@ -1,8 +1,9 @@
-import { uploadToS3 } from "../utils/storage";
-import { uploadToSupabase } from "../utils/db";
+import { uploadToS3, getFileFromS3 } from "../utils/storage";
+import { uploadToSupabase, getFileData, incrementDownloadCount } from "../utils/db";
+
 
 const randcode = (len: number) => {
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHILKLMNOPQRSTUVWXYZ";
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHILKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     let result = "";
     for (let i = 0; i < len; i++) {
         result += charset[Math.floor(Math.random() * charset.length)];
@@ -17,21 +18,18 @@ const uploadFile = async (file: File, pass: string) => {
     }
 
     if (!acceptedfile.types.includes(file.type)) {
-        return {message: "error", error: "File type not accepted"};
+        return {success: false, message: "File type not accepted"};
     }
 
     if (file.size > acceptedfile.size) {  
-        return {message: "error", error: "File size more that 5MB"};
+        return {success: false, message: "File size more that 5MB"};
     }
 
     //upload to aws
     const awsres = await uploadToS3(file);
-    if(awsres.message === "error"){
-        return {message: "error", error: awsres.error};
+    if(!awsres.success){
+        return {success: false, message: awsres.error};
     }
-
-    //success block
-    console.log('file uploaded to aws')
 
     //upload to supabase
     const filedata = {
@@ -48,13 +46,39 @@ const uploadFile = async (file: File, pass: string) => {
     console.log(filedata, "filedataa")
     const supares = await uploadToSupabase(filedata);
 
-    if(supares.message === "error"){
-        return {message: "error", error: supares.error};
+    if(!supares.success){
+        return {success: false, message: supares.message};
     }
 
-    return {message: "success", data: {filedata, awsres, supares}, id: filedata.id};    
+    return {success: true, id: filedata.id};    
 
 }
 
 
-export { randcode, uploadFile };
+const handleDownload = async(id: string, pass: string) => {
+    const filedata = await getFileData(id);
+    if(!filedata)
+        return {success: false, message: "Error getting file data"};
+    
+    if(filedata.data.hashpass){
+        if(pass === ""){
+            return {success: false, message: "Password required"};
+        }
+        if(pass !== filedata.data.hashpass){
+            return {success: false, message: "Invalid password"};
+        }
+    }
+
+    //get file from aws
+    const file = await getFileFromS3(filedata.data.awskey);
+
+    if(!file)
+        return {success: false, message: "Error getting file from S3"};
+
+    //increment download count
+    await incrementDownloadCount(id);
+
+    return { success: true, message: "File retrieved", file, filename: filedata.data.name}
+}
+
+export { randcode, uploadFile, handleDownload };

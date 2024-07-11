@@ -9,12 +9,12 @@ const App: React.FC = () => {
     <div className="w-screen min-h-screen bg-gray-900">
       <Toaster />
       <div className="absolute top-4 left-2">
-        <img src="image.png" alt="" className="w-32 -rotate-[20deg]"/>
+        <img src="logo.png" alt="" className="w-32 -rotate-[20deg]"/>
       </div>
       <Router>
         <Routes>
           <Route path="/" element={<UploadFile />} />
-          <Route path="/view" element={<ViewFile />} />
+          <Route path="/:id" element={<ViewFile />} />
         </Routes>
       </Router>
     </div>
