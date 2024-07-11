@@ -1,13 +1,14 @@
 import React, { useState } from "react";
-import { FileType } from "../utils/types";
-import { randcode, uploadFile } from "../utils/db";
+import { uploadFile } from "../helpers/filehandle";
 import Toast from "../utils/Toast";
 
 const UploadFile: React.FC = () => {
-  const [file, setFile] = useState<FileType | null>(null);
-  // const [error, setError] = useState<string | null>(null);
-  const [pass, setPass] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [pass, setPass] = useState<string>("");
+  const [id, setId] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
+  //when user selects a file
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const file = event.target.files?.[0];
     console.log(file, ": file");
@@ -15,44 +16,43 @@ const UploadFile: React.FC = () => {
       Toast.Error("No file selected.");
       return;
     }
-    setFile({
-      id: randcode(5),
-      name: file.name,
-      created_at: new Date().toISOString(),
-      filetype: file.type,
-      size: file.size,
-      downloadcount: 0,
-      hashpass: "",
-      firebasekey: "firekey",
-    });
+    setFile(file);
   };
 
+  //when user clicks on upload button
   const createFile = async () => {
     if (!file) {
       Toast.Error("No file selected");
       return;
     }
-    const upload = await uploadFile(file);
+    setLoading(true);
+    const upload = await uploadFile(file, pass);
+    setLoading(false);
     if (upload.message === "success") {
       Toast.Success("File uploaded successfully.");
-      console.log("File created successfully.");
+      console.log(upload.data);
+      setId(upload.data?.filedata.id || "");
+      setFile(null);
+      (
+        document.getElementsByClassName("passfield")[0] as HTMLInputElement
+      ).value = "";
     } else {
-      Toast.Error(upload.error || "Error creating file.");
-      console.error("Error creating file:", upload.error);
+      Toast.Error("Error uploading file.");
+      console.error("Error uploading file:", upload.error);
     }
   };
 
+  //when user types in password
   const handlepass = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPass(event.target.value);
-    if (file) {
-      setFile({ ...file, hashpass: event.target.value });
-    }
   };
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center gap-8 bg-gray-900 text-white p-8">
+    <div className="w-full flex flex-col justify-center items-center gap-8 px-8 py-20 text-white ">
       <div className="text-center max-w-2xl">
-        <h1 className="text-4xl font-bold mb-4">Secure Anonymous File Share</h1>
+        <h1 className="text-4xl font-bold mb-4 ">
+          Secure Anonymous File Share
+        </h1>
         <p className="text-gray-300 text-lg">
           Upload and share files securely with end-to-end encryption. No
           registration required.
@@ -61,7 +61,7 @@ const UploadFile: React.FC = () => {
       <div className="w-full max-w-xl">
         <label
           htmlFor="dropzone-file"
-          className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 transition-colors duration-300"
+          className="flex flex-col items-center justify-center w-full h-64 border-2 px-10 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 transition-colors duration-300"
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <svg
@@ -83,7 +83,7 @@ const UploadFile: React.FC = () => {
               drop
             </p>
             <p className="text-xs text-gray-500">
-              Supported formats: PNG, JPG, GIF, PDF (Max 5MB)
+              Supported formats: PNG, JPG, GIF, PDF, WORD, EXCEL (Max 5MB)
             </p>
             {file && <p className="mt-2 text-sm text-blue-400">{file.name}</p>}
           </div>
@@ -96,24 +96,59 @@ const UploadFile: React.FC = () => {
         </label>
       </div>
       <div className="w-full max-w-lg">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
           <input
             type="password"
             onChange={handlepass}
             placeholder="Set a password (optional)"
-            className="flex-grow px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="passfield w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             onClick={createFile}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+            className="w-full sm:w-auto px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+            disabled={loading}
           >
             Upload
           </button>
         </div>
-        <p className="mt-1 text-xs font-thin text-gray-500">
+        <p className="mt-2 text-xs font-thin text-gray-500">
           Files are encrypted. Use a password for added security.
         </p>
       </div>
+
+      {id && (
+        <div className="w-full max-w-xl relative bg-gray-800 border border-gray-700 rounded-lg p-4 text-center">
+          <p className="text-sm text-gray-400 mb-2">Your secure file link:</p>
+          <p
+            className="absolute top-0 right-2 text-gray-600 hover:cursor-pointer"
+            onClick={() => setId("")}
+          >
+            x
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <input
+              type="text"
+              value={`https://transferfile.vercel.app/${id}`}
+              readOnly
+              className="bg-gray-900 text-gray-300 px-3 py-2 rounded-lg flex-grow overflow-x-scroll"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(
+                  `https://transferfile.vercel.app/${id}`
+                );
+                Toast.Success("Link copied to cllipboard");
+              }}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+            >
+              Copy
+            </button>
+          </div>
+          <p className="mt-2 text-xs text-gray-500">
+            Share this link to allow others to download your file
+          </p>
+        </div>
+      )}
     </div>
   );
 };

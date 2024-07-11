@@ -1,2 +1,3 @@
 - store shared files in local storage
-- firebase storage
+- aws storage
+- perform tesing - unit and integration

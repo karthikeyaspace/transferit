@@ -1,33 +1,8 @@
 import { supabase } from "../services/supabase";
 import { FileType } from "./types";
 
-const randcode = (len: number) => {
-    const charset = "abcdefghijklmnopqrstuvwxyz";
-    let result = "";
-    for (let i = 0; i < len; i++) {
-        result += charset[Math.floor(Math.random() * charset.length)];
-    }
-    return result;
-}
 
-
-const uploadFile = async (file: FileType) => {
-    const acceptedfile = {
-        types: ["image/png", "image/jpeg", "image/gif", "application/pdf"],
-        size: 5242880
-    }
-
-    if (!acceptedfile.types.includes(file.filetype)) {
-        return {message: "error", error: "File type not accepted"};
-    }
-
-    if (file.size > acceptedfile.size) {  
-        return {message: "error", error: "File size more that 5MB"};
-    }
-
-    //first upload file to firebase
-    
-    //then update to supabase
+const uploadToSupabase = async (file: FileType) => {
     const { data, error } = await supabase
         .from('files')
         .insert([{ 
@@ -35,12 +10,12 @@ const uploadFile = async (file: FileType) => {
             name: file.name, 
             size: file.size, 
             filetype: file.filetype, 
-            downloadcount: file.downloadcount, 
+            downloadcount: 0, 
             hashpass: file.hashpass, 
-            firebasekey: file.firebasekey 
+            awskey: file.awskey 
         }]);
     if (error) {
-        console.error('Error creating file:', error.message);
+        console.error('Error creating file - SUPABASE:', error.message);
         return {message: "error", error: error.message};
     } else {
         return {message: "success", data: data};
@@ -59,4 +34,4 @@ const uploadFile = async (file: FileType) => {
 
 
 
-export { randcode, uploadFile };
+export { uploadToSupabase };

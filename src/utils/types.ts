@@ -6,7 +6,7 @@ interface FileType {
     size: number;
     downloadcount: number;
     hashpass: string;
-    firebasekey: string;
+    awskey: string;
 }
 
 
