@@ -9,11 +9,11 @@ const ViewFile: React.FC = () => {
   const [pass, setPass] = useState<string>("");
   const [reqpass, setReqpass] = useState<boolean>(false);
   const [filefound, setFilefound] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [dloading, setDLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const checkPassReq = async () => {
-      setLoading(true);
       const res = await getFileData(id as string);
       setLoading(false);
       if (!res.success) {
@@ -30,9 +30,9 @@ const ViewFile: React.FC = () => {
 
   const handleFileDownload = async () => {
     if (reqpass && pass === "") return Toast.Error("Password required");
-    setLoading(true);
+    setDLoading(true);
     const res = await handleDownload(id as string, pass);
-    setLoading(false);
+    setDLoading(false);
     if (!res.success) Toast.Error(res.message);
     else {
       Toast.Success(res.message);
@@ -46,6 +46,8 @@ const ViewFile: React.FC = () => {
       window.URL.revokeObjectURL(url);
     }
   };
+
+  if(loading) return <div className="w-screen h-screen text-white text-4xl flex justify-center items-center  ">Loading...</div>
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-8 px-8 md:px-0 text-white">
@@ -65,16 +67,16 @@ const ViewFile: React.FC = () => {
                   value={pass}
                   onChange={(e) => setPass(e.target.value)}
                   placeholder="Enter password"
-                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 rounded-lg bg-stone-800 border border-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-500"
                 />
               </div>
             )}
 
             <button
               onClick={handleFileDownload}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+              className="w-full px-6 py-3 bg-stone-600 text-white rounded-lg hover:bg-stone-700 transition-colors duration-300"
             >
-              {loading
+              {dloading
                 ? "Loading..."
                 : reqpass
                 ? "Submit Password and download"
@@ -93,7 +95,7 @@ const ViewFile: React.FC = () => {
             The file you are looking for does not exist or has been deleted.
           </p>
           <a href="/">
-            <button className="w-full px-6 py-3 mt-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+            <button className="w-full px-6 py-3 mt-10 bg-stone-600 text-white rounded-lg hover:bg-stone-700 transition-colors duration-300">
               Get Started
             </button>
           </a>

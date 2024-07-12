@@ -48,24 +48,24 @@ const UploadFile: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col justify-center items-center gap-8 px-8 md:px-0 text-white ">
+    <div className="w-full flex flex-col justify-center items-center gap-8 px-8 md:px-0 text-gray-300 ">
       <div className="text-center max-w-2xl mt-20">
         <h1 className="text-4xl font-bold mb-4 ">
           Secure Anonymous File Share
         </h1>
         <p className="text-gray-300 text-lg">
-          Upload and share files securely with end-to-end encryption. No
+          Upload and share files securely and anonymously with end-to-end encryption. No
           registration required.
         </p>
       </div>
       <div className="w-full max-w-xl">
         <label
           htmlFor="dropzone-file"
-          className="flex flex-col items-center justify-center w-full h-64 border-2 px-10 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-700 transition-colors duration-300"
+          className="flex flex-col items-center justify-center w-full h-64 border-2 px-10 border-gray-600 border-dashed rounded-lg cursor-pointer bg-stone-800 hover:bg-stone-700 transition-colors duration-300"
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             <svg
-              className="w-10 h-10 mb-3 text-gray-400"
+              className="w-10 h-10 mb-3 text-gray-300"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -83,9 +83,9 @@ const UploadFile: React.FC = () => {
               drop
             </p>
             <p className="text-xs text-gray-500">
-              Supported formats: PNG, JPG, GIF, PDF, WORD, EXCEL (Max 2MB)
+              Supported formats: PNG, JPG, GIF, PDF, WORD, EXCEL (Max 5MB)
             </p>
-            {file && <p className="mt-2 text-sm text-blue-400">{file.name}</p>}
+            {file && <p className="mt-2 text-sm text-white">{file.name}</p>}
           </div>
           <input
             id="dropzone-file"
@@ -101,11 +101,11 @@ const UploadFile: React.FC = () => {
             type="password"
             onChange={handlepass}
             placeholder="Set a password (optional)"
-            className="passfield w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="passfield w-full px-4 py-2 rounded-lg bg-transparent border border-gray-500 focus:outline-none focus:ring-2 focus:ring-stone-400"
           />
           <button
             onClick={createFile}
-            className="w-40 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
+            className="w-full sm:w-40 px-6 py-2 bg-stone-600 text-white rounded-lg hover:bg-stone-500 transition-colors duration-300"
             disabled={loading}
           >
             {loading ? "Loading...": "Upload"}
@@ -117,7 +117,7 @@ const UploadFile: React.FC = () => {
       </div>
 
       {id && (
-        <div className=" w-full max-w-xl relative bg-gray-800 border overflow-x-hidden border-gray-700 rounded-lg p-4 mb-10 text-center">
+        <div className=" w-full max-w-xl relative bg-stone-900 border overflow-x-hidden border-gray-700 rounded-lg p-4 mb-10 text-center">
           <p className="text-sm text-gray-400 mb-2">Your secure file link:</p>
           <p
             className="absolute top-0 right-2 text-gray-600 hover:cursor-pointer"
@@ -130,7 +130,7 @@ const UploadFile: React.FC = () => {
               type="text"
               value={`https://transferfile.vercel.app/${id}`}
               readOnly
-              className="bg-gray-900 text-gray-300 px-3 py-2 rounded-lg flex-grow overflow-x-scroll"
+              className="bg-stone-800 text-gray-300 px-3 py-2 rounded-lg flex-grow overflow-x-scroll"
             />
             <button
               onClick={() => {
@@ -139,7 +139,7 @@ const UploadFile: React.FC = () => {
                 );
                 Toast.Success("Link copied to cllipboard");
               }}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+              className="bg-stone-600 hover:bg-stone-500 text-white px-4 py-2 rounded-lg transition-colors duration-300"
             >
               Copy
             </button>

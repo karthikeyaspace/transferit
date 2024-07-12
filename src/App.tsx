@@ -6,7 +6,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 const App: React.FC = () => {
   return (
-    <div className="w-screen min-h-screen bg-gray-900">
+    <div className="w-screen min-h-screen bg-stone-800 flex flex-col justify-between">
       <Toaster />
       <div className="absolute top-4 left-2">
         <img src="logo.png" alt="" className="w-32 -rotate-[20deg]"/>
@@ -17,6 +17,15 @@ const App: React.FC = () => {
           <Route path="/:id" element={<ViewFile />} />
         </Routes>
       </Router>
+
+      <div className="w-full">
+        <p className="text-center text-xs mx-auto my-1 text-gray-400">
+          Built by{" "}
+          <a href="https://kv3.vercel.app" target="_blank" className="text-blue-400 italic">
+            karthikeya
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

@@ -13,8 +13,8 @@ const randcode = (len: number) => {
 
 const uploadFile = async (file: File, pass: string) => {
     const acceptedfile = {
-        types: ["image/png", "image/jpeg", "image/jpg", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel"],
-        size: 2097152
+        types: ["image/png", "image/jpeg", "image/jpg", "image/gif", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel"],
+        size: 5242880 //5MB
     }
 
     if (!acceptedfile.types.includes(file.type)) {
@@ -22,7 +22,7 @@ const uploadFile = async (file: File, pass: string) => {
     }
 
     if (file.size > acceptedfile.size) {  
-        return {success: false, message: "File size more that 2MB"};
+        return {success: false, message: "File size more that 5MB"};
     }
 
     //upload to aws
