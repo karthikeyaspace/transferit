@@ -43,7 +43,7 @@ const uploadFile = async (file: File, pass: string) => {
         awskey: awsres.data?.key || ""
     }
 
-    console.log(filedata, "filedataa")
+
     const supares = await uploadToSupabase(filedata);
 
     if(!supares.success){

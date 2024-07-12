@@ -11,7 +11,6 @@ const UploadFile: React.FC = () => {
   //when user selects a file
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = (event) => {
     const file = event.target.files?.[0];
-    console.log(file, ": file");
     if (!file) {
       Toast.Error("No file selected.");
       return;

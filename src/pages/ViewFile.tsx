@@ -22,9 +22,8 @@ const ViewFile: React.FC = () => {
         return;
       }
       setFilefound(true);
-      if (res.data?.hashpass) {
+      if (res.data?.hashpass) 
         setReqpass(true);
-      }
     };
     checkPassReq();
   }, [id]);
