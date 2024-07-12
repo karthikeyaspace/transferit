@@ -1,4 +1,5 @@
 import { PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+// import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3Client } from '../services/awss3';
 import { randcode } from "../helpers/filehandle";
 import config from "../helpers/env";
@@ -37,6 +38,23 @@ const getFileFromS3 = async (awskey: string): Promise<Blob | null> => {
     console.error('Error downloading file from S3:', (error as Error).message);
     return null;
   }
-};
+}; //return file blob
+
+// const getFileFromS3 = async (awskey: string) => {
+//   const params = {
+//     Bucket: config.AWS_BUCKET,
+//     Key: awskey,
+//   };
+
+//   try{
+//     const command = new GetObjectCommand(params)
+//     const url = await getSignedUrl(s3Client, command, {expiresIn: 60}) // 1 minute
+//     return {success: true, url: url}
+//   }
+//   catch (error) {
+//     console.error('Error downloading file from S3:', (error as Error).message);
+//     return {success: false, message: "Failed to get file", error: (error as Error).message};
+//   }
+// } //return tmporary persigned url
 
 export { uploadToS3, getFileFromS3 };

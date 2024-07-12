@@ -9,10 +9,13 @@ const ViewFile: React.FC = () => {
   const [pass, setPass] = useState<string>("");
   const [reqpass, setReqpass] = useState<boolean>(false);
   const [filefound, setFilefound] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const checkPassReq = async () => {
+      setLoading(true);
       const res = await getFileData(id as string);
+      setLoading(false);
       if (!res.success) {
         Toast.Error("Error getting file data");
         setFilefound(false);
@@ -27,11 +30,13 @@ const ViewFile: React.FC = () => {
   }, [id]);
 
   const handleFileDownload = async () => {
+    if (reqpass && pass === "") return Toast.Error("Password required");
+    setLoading(true);
     const res = await handleDownload(id as string, pass);
+    setLoading(false);
     if (!res.success) Toast.Error(res.message);
     else {
       Toast.Success(res.message);
-      console.log(res.file);
       const url = window.URL.createObjectURL(res.file!);
       const a = document.createElement("a");
       a.style.display = "none";
@@ -48,7 +53,7 @@ const ViewFile: React.FC = () => {
       {filefound ? (
         <>
           <div className="text-center max-w-2xl mt-20">
-            <h1 className="text-4xl font-bold mb-4">View File</h1>
+            <h1 className="text-4xl font-bold mb-4">Access File</h1>
             <p className="text-gray-300 text-lg">
               Download your secure file. Enter password if required.
             </p>
@@ -70,10 +75,14 @@ const ViewFile: React.FC = () => {
               onClick={handleFileDownload}
               className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"
             >
-              {reqpass ? "Submit Password and Download" : "Download File"}
+              {loading
+                ? "Loading..."
+                : reqpass
+                ? "Submit Password and download"
+                : "Download File"}
             </button>
           </div>
-          <p className="mt-2 text-xs font-thin text-gray-500">
+          <p className=" text-xs font-thin text-gray-500">
             Files are encrypted. Enter the password if one was set during
             upload.
           </p>
@@ -85,7 +94,9 @@ const ViewFile: React.FC = () => {
             The file you are looking for does not exist or has been deleted.
           </p>
           <a href="/">
-          <button className="w-full px-6 py-3 mt-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300"> Get Started </button>
+            <button className="w-full px-6 py-3 mt-10 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300">
+              Get Started
+            </button>
           </a>
         </div>
       )}

@@ -1,5 +1,5 @@
 import { uploadToS3, getFileFromS3 } from "../utils/storage";
-import { uploadToSupabase, getFileData, incrementDownloadCount } from "../utils/db";
+import { uploadToSupabase, getFileData } from "../utils/db";
 
 
 const randcode = (len: number) => {
@@ -14,7 +14,7 @@ const randcode = (len: number) => {
 const uploadFile = async (file: File, pass: string) => {
     const acceptedfile = {
         types: ["image/png", "image/jpeg", "image/jpg", "text/csv", "application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.ms-excel"],
-        size: 5242880
+        size: 2097152
     }
 
     if (!acceptedfile.types.includes(file.type)) {
@@ -22,7 +22,7 @@ const uploadFile = async (file: File, pass: string) => {
     }
 
     if (file.size > acceptedfile.size) {  
-        return {success: false, message: "File size more that 5MB"};
+        return {success: false, message: "File size more that 2MB"};
     }
 
     //upload to aws
@@ -76,7 +76,7 @@ const handleDownload = async(id: string, pass: string) => {
         return {success: false, message: "Error getting file from S3"};
 
     //increment download count
-    await incrementDownloadCount(id);
+    // await incrementDownloadCount(id);
 
     return { success: true, message: "File retrieved", file, filename: filedata.data.name}
 }

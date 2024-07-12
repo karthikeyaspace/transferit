@@ -84,7 +84,7 @@ const UploadFile: React.FC = () => {
               drop
             </p>
             <p className="text-xs text-gray-500">
-              Supported formats: PNG, JPG, GIF, PDF, WORD, EXCEL (Max 5MB)
+              Supported formats: PNG, JPG, GIF, PDF, WORD, EXCEL (Max 2MB)
             </p>
             {file && <p className="mt-2 text-sm text-blue-400">{file.name}</p>}
           </div>
